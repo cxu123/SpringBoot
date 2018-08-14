@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30">
+    <Properties>
+        <Property name="APPNAME">luck</Property>
+        <Property name="LOG_PATTERN"> %d %-5p [%c] %m%n</Property>
+    	<property name="logBaseFolder">E:\test\logs</property>
+    	<!-- 日志文件名称的前缀部分，以下为建议值 -->
+        <property name="logFileNamePrefix">${APPNAME}</property>
+        <!-- 日志文件最小切割单位 值不做强制要求，建议300MB -->
+        <property name="every_file_size">300MB</property>
+        <!-- *必须并强制遵守 日志文件的编码 -->
+        <property name="log_charset">UTF-8</property>
+    </Properties>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </Console>
+        <!-- 以下是建议的日志压缩包目录的格式名称 -->
+        <!-- all File Config -->
+        <RollingFile  name="fileLog"
+                                 filePattern="${logBaseFolder}/%d{yyyy-MM-dd}/${logFileNamePrefix}-all-%d{yyyyMMdd-HH}.%i.log.gz"
+                                 fileName="${logBaseFolder}/${logFileNamePrefix}-all.log"
+                                 immediateFlush="false">
+            <!-- 日志输出格式 -->
+            <PatternLayout charset="${log_charset}" pattern="${LOG_PATTERN}" />
+            <!-- 以下是日志压缩包目录的建议格式名称 建议1天归档依次，压缩文件上线建议为200,这里预估每个磁盘存储空间200G左右，每个压缩包最大值200MB -->
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1" />
+                <SizeBaseDTriggeringPolicy size="${every_file_size}" />
+            </Policies>
+            <DefaultRolloverStrategy max="1000" />
+            <Filters>
+                <!-- 显示所有信息 -->
+                <ThresholdFilter onMismatch="DENY" onMatch="ACCEPT" level="TRACE" />
+            </Filters>
+        </RollingFile >
+    </Appenders>
+    <Loggers>
+        <Logger name="org.hibernate.validator.internal.util.Version" level="warn" />
+        <Logger name="org.apache.coyote.http11.Http11NioProtocol" level="warn" />
+        <Logger name="org.apache.tomcat.util.net.NioSelectorPool" level="warn" />
+        <Logger name="logging.level.org.springframework" level="debug" />
+        <Root level="debug">
+            <AppenderRef ref="Console" />
+<!--             <AppenderRef ref="fileLog" /> -->
+        </Root>
+    </Loggers>
+</Configuration>
